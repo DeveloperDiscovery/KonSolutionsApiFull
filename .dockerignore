@@ -1,0 +1,32 @@
+## Compilados y temporales
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+
+## Configuración de desarrollo (no va en la imagen)
+appsettings.Development.json
+appsettings.Local.json
+
+## Benchmarks (proyecto de pruebas, no va en producción)
+BenchmarkSuite/
+
+## Git
+.git/
+.gitignore
+.gitattributes
+
+## Docker
+Dockerfile
+.dockerignore
+
+## Documentación y scripts locales
+README.md
+*.sh
+*.ps1
+
+## Logs locales
+logs/
+*.log

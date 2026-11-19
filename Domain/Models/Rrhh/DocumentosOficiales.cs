@@ -1,0 +1,62 @@
+using System.ComponentModel.DataAnnotations;
+namespace KonSolutionsApi.Domain.Models.Rrhh;
+
+/// <summary>Entidad DOCUMENTOS_OFICIALES - tipos equivalentes a la BD.</summary>
+public class DocumentosOficiales
+{
+    public int? NUM_DOCUMENTO_OFICIAL { get; set; }
+    public string DES_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    public string DES_FORMATO_DOCUMENTO { get; set; } = string.Empty;
+    public DateTime? FEC_DOCUMENTO { get; set; }
+    public string COD_TIPO_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    public int? COD_TIPO_MOTIVO { get; set; }
+    public int? COD_MOTIVO { get; set; }
+    public int? COD_TIPO_ESTADO { get; set; }
+    public int? COD_ESTADO { get; set; }
+    public string COD_USUARIO_REGISTRO { get; set; } = string.Empty;
+    public string COD_ESTACION_REGISTRO { get; set; } = string.Empty;
+    public DateTime? FEC_REGISTRO { get; set; }
+    public string COD_USUARIO_ACTUALIZACION { get; set; } = string.Empty;
+    public string COD_ESTACION_ACTUALIZACION { get; set; } = string.Empty;
+    public DateTime? FEC_ACTUALIZACION { get; set; }
+    public string DES_BACKCOLOR { get; set; } = string.Empty;
+    public string DES_ESTADO { get; set; } = string.Empty;
+    public string DES_FORECOLOR { get; set; } = string.Empty;
+    public string DES_MOTIVO { get; set; } = string.Empty;
+    public string DES_TIPO_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+}
+
+public class DocumentosOficialesInsertDto
+{
+    public int? NUM_DOCUMENTO_OFICIAL { get; set; }
+    [Required] public string DES_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    [Required] public string DES_FORMATO_DOCUMENTO { get; set; } = string.Empty;
+    public DateTime? FEC_DOCUMENTO { get; set; }
+    [Required] public string COD_TIPO_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    public int? COD_TIPO_MOTIVO { get; set; }
+    public int? COD_MOTIVO { get; set; }
+    public int? COD_TIPO_ESTADO { get; set; }
+    public int? COD_ESTADO { get; set; }
+    public string COD_USUARIO_REGISTRO { get; set; } = string.Empty;
+    public string COD_ESTACION_REGISTRO { get; set; } = string.Empty;
+}
+
+public class DocumentosOficialesUpdateDto
+{
+    public int? NUM_DOCUMENTO_OFICIAL { get; set; }
+    [Required] public string DES_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    [Required] public string DES_FORMATO_DOCUMENTO { get; set; } = string.Empty;
+    public DateTime? FEC_DOCUMENTO { get; set; }
+    [Required] public string COD_TIPO_DOCUMENTO_OFICIAL { get; set; } = string.Empty;
+    public int? COD_TIPO_MOTIVO { get; set; }
+    public int? COD_MOTIVO { get; set; }
+    public int? COD_TIPO_ESTADO { get; set; }
+    public int? COD_ESTADO { get; set; }
+    public string COD_USUARIO_REGISTRO { get; set; } = string.Empty;
+    public string COD_ESTACION_REGISTRO { get; set; } = string.Empty;
+}
+
+public class DocumentosOficialesSearchDto
+{
+    public string? Search { get; set; }
+}

@@ -1,0 +1,63 @@
+using KonSolutionsApi.Application.Interfaces;
+using KonSolutionsApi.Common;
+using KonSolutionsApi.Domain.Models.Logistica;
+
+namespace KonSolutionsApi.Application.Services;
+
+/// <summary>Sin UpdateAsync: tabla de asignación pura, solo Asignar(Insert=upsert)/Quitar(Delete).</summary>
+public class InventariosAlmacenesPuntoTomaPersonalService : IInventariosAlmacenesPuntoTomaPersonalService
+{
+    private const string Programa = "KonSolutionsApi";
+    private const string Clase = nameof(InventariosAlmacenesPuntoTomaPersonalService);
+    private readonly IInventariosAlmacenesPuntoTomaPersonalRepository _repo;
+    private readonly ErrorLogService _log;
+    public InventariosAlmacenesPuntoTomaPersonalService(IInventariosAlmacenesPuntoTomaPersonalRepository repo, ErrorLogService log) { _repo = repo; _log = log; }
+
+    public async Task<ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>> GetAllAsync(int numInventario, string codAlmacen, byte numPuntoTomaInventario)
+    {
+        try { var d = (await _repo.ShowallAsync(numInventario, codAlmacen, numPuntoTomaInventario)).ToList();
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Ok(d, total: d.Count); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(GetAllAsync));
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Fail(ex.Message); }
+    }
+
+    public async Task<ApiResponse<InventariosAlmacenesPuntoTomaPersonal>> GetByIdAsync(int numInventario, string codAlmacen, byte numPuntoTomaInventario, decimal codEntidadAsignada)
+    {
+        try { var d = await _repo.ShowbyidAsync(numInventario, codAlmacen, numPuntoTomaInventario, codEntidadAsignada);
+              return d is null ? ApiResponse<InventariosAlmacenesPuntoTomaPersonal>.Fail("No encontrado.") : ApiResponse<InventariosAlmacenesPuntoTomaPersonal>.Ok(d); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(GetByIdAsync));
+              return ApiResponse<InventariosAlmacenesPuntoTomaPersonal>.Fail(ex.Message); }
+    }
+
+    public async Task<ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>> GetComboboxAsync(int numInventario, string codAlmacen, byte numPuntoTomaInventario)
+    {
+        try { var d = (await _repo.ShowcomboxAsync(numInventario, codAlmacen, numPuntoTomaInventario)).ToList();
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Ok(d, total: d.Count); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(GetComboboxAsync));
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Fail(ex.Message); }
+    }
+
+    public async Task<ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>> SearchAsync(InventariosAlmacenesPuntoTomaPersonalSearchDto dto)
+    {
+        try { var d = (await _repo.SearchAsync(dto)).ToList();
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Ok(d, total: d.Count); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(SearchAsync));
+              return ApiResponse<IEnumerable<InventariosAlmacenesPuntoTomaPersonal>>.Fail(ex.Message); }
+    }
+
+    public async Task<ApiResponse<WriteResult>> InsertAsync(InventariosAlmacenesPuntoTomaPersonalInsertDto dto, string codUsuario, string codEstacion)
+    {
+        try { var r = await _repo.InsertAsync(dto, codUsuario, codEstacion);
+              return ApiResponse<WriteResult>.FromWriteResult(r, "Persona asignada."); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(InsertAsync));
+              return ApiResponse<WriteResult>.Fail(ex.Message); }
+    }
+
+    public async Task<ApiResponse<WriteResult>> DeleteAsync(int numInventario, string codAlmacen, byte numPuntoTomaInventario, decimal codEntidadAsignada)
+    {
+        try { var r = await _repo.DeleteAsync(numInventario, codAlmacen, numPuntoTomaInventario, codEntidadAsignada);
+              return ApiResponse<WriteResult>.FromWriteResult(r, "Persona quitada."); }
+        catch (Exception ex) { _log.LogError(ex, Programa, Clase, nameof(DeleteAsync));
+              return ApiResponse<WriteResult>.Fail(ex.Message); }
+    }
+}

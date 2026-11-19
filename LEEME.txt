@@ -1,0 +1,135 @@
+====================================================================
+PROYECTO DE LA API CORREGIDO — KonSolutionsApiFull
+Pedido: "dame el proyecto de la API corregido, salvo por la contraseña"
+====================================================================
+
+Este zip trae el proyecto COMPLETO de la API, no solo los archivos
+tocados, porque eso fue lo que pediste. Está armado sobre el que me
+subiste el 31/08, así que todo lo que ya veníamos corrigiendo en la
+sesión (comparativo, requerimientos, NUM_REQUERIMIENTO_STOCK_ORIGINAL,
+COD_TIPO_ESTADO_DETALLE_RELACIONADO, el DELETE de 4 parámetros, los
+campos de auditoría nullable) ya venía adentro y no lo volví a tocar.
+
+Lo NUEVO de este paquete son 18 archivos.
+
+CORRECCIÓN respecto del zip que te mandé antes: aquel lo armé sobre una
+copia del proyecto que resultó ser una versión anterior, y le faltaba la
+propiedad DES_TIPO_PRECIO en
+Domain/Models/Comercial/PedidosComercialesRequerimientos.cs — o sea que te
+habría hecho retroceder ese arreglo. Ya está puesta. Usa ESTE zip y
+descarta el anterior.
+
+--------------------------------------------------------------------
+1. CONTROL DE PERMISOS: 11 controladores que no declaraban nada
+--------------------------------------------------------------------
+De 498 controladores había 13 sin declaración. Dos son correctos así
+(AuthController, que ya tiene su exención, y BaseController, que es
+clase base y no expone rutas). Los otros 11 quedaron declarados.
+
+IMPORTANTE, para que no te confunda el efecto: el filtro
+PermisoAuthorizationFilter NO bloquea cuando un endpoint no declara
+objeto — solo lo audita como "(SIN DECLARAR)". Además hoy tienes
+Permisos:Modo = "Auditoria" en appsettings.json, que tampoco bloquea.
+O sea: esto NO cambia el comportamiento en ejecución. Lo que cambia
+es que ya no hay endpoints en zona gris, y el día que pases el modo a
+bloqueante no te van a caer 11 sorpresas.
+
+  a) Administran una tabla real → [ExigePermiso("ESQUEMA.TABLA")]
+     Verifiqué que las cuatro tablas existan antes de escribirlas:
+
+     ControlCambiosController        ENTORNO.CONTROL_CAMBIOS
+     SnippetsController              EXTERNO.SNIPPETS
+     UsuarioAsignacionesController   SEGURIDAD.ROLES_USUARIO_USUARIOS
+     DocumentosCarpetaController     ENTORNO.PATHFILES
+
+  b) No administran ninguna tabla → [SinControlPermisos("motivo")]
+     Este atributo ya existía en tu proyecto justo para esto; lo usa
+     AuthController y DeveloperLogController. Cada uno lleva escrito
+     el motivo, y donde queda riesgo residual lo dice con todas sus
+     letras en vez de disimularlo:
+
+     LimitesColumnasController         apoyo de interfaz (longitudes de columna)
+     EstadosPorTablaController         combo de estados por tabla
+     BiometriaController               el usuario valida su propia huella
+     NotificacionesAprobacionesController  el SP ya filtra por destinatario
+     MetodosApiController              metadatos para la herramienta de desarrollo
+                                       -> ATENCIÓN: enumera la superficie de la API.
+     DashboardBdController             diagnóstico del motor (sesiones, bloqueos, espacio)
+                                       -> ATENCIÓN: hoy lo ve cualquier usuario autenticado.
+     DocumentosController              descarga un archivo por su ruta
+                                       -> ATENCIÓN: no distingue de qué módulo es el
+                                          documento; quien conozca la ruta lo baja.
+
+     Los tres "ATENCIÓN" son decisiones que te corresponden a ti, no
+     las tomé yo. Si quieres acotarlas hay que crear la opción en
+     SEGURIDAD.APLICACIONES_OPCIONES y declarar el objeto; en el caso
+     de Documentos, además, validar el permiso del módulo dueño del
+     archivo, que ya es un cambio de diseño aparte.
+
+     Aclaro por qué no les puse [ExigePermiso] a estos tres: no existe
+     tabla que representen. Confirmé contra la base que NO existen
+     ENTORNO.NOTIFICACIONES_APROBACIONES, ENTORNO.LIMITES_COLUMNAS ni
+     SEGURIDAD.BIOMETRIA. Inventar un nombre de objeto habría hecho
+     que el filtro buscara un permiso que nunca va a existir.
+
+  A los 11 les agregué también el "using KonSolutionsApi.API.Filters;".
+
+--------------------------------------------------------------------
+2. ARCHIVOS ELIMINADOS (basura que estaba versionada)
+--------------------------------------------------------------------
+  Program_AGREGAR.txt                 fragmento pegado suelto, ya aplicado
+  Common/StoredProcedureNames_AGREGAR.cs   idem, ya aplicado
+  KONSolutionsApi.csproj.Backup.tmp   copia vieja del csproj: le falta el
+                                      UserSecretsId y trae BenchmarkDotNet y
+                                      VSDiagnostics que ya sacaste
+  KONSolutions.csproj.user            .user de un nombre de proyecto que ya
+                                      no existe
+  Resultados-Depurar.txt              80 KB de salida del depurador de VS
+
+--------------------------------------------------------------------
+3. dockerignore -> .dockerignore
+--------------------------------------------------------------------
+El archivo estaba sin el punto inicial, así que Docker lo ignoraba por
+completo: el contexto de build se estaba llevando .git, bin, obj, .vs y
+los *.user a la imagen. Renombrado, el contenido ya estaba bien.
+
+--------------------------------------------------------------------
+4. .gitignore
+--------------------------------------------------------------------
+Ya cubría .vs, bin, obj, *.user y *.tmp (no había nada que arreglar ahí,
+los archivos del punto 2 estaban versionados desde antes de esas reglas).
+Solo le agregué Resultados-Depurar.txt al final.
+
+--------------------------------------------------------------------
+5. LO QUE NO TOQUÉ, A PROPÓSITO
+--------------------------------------------------------------------
+  - La contraseña / hash. Lo dejaste para después, y lo dejé intacto.
+  - appsettings.json. Lo revisé: DefaultConnection y JwtSettings:SecretKey
+    están vacíos y se leen de las variables de entorno. Correcto, sin
+    secretos versionados.
+  - Permisos:Modo sigue en "Auditoria". Cambiarlo a bloqueante es una
+    decisión tuya y conviene hacerla después de ver unos días de auditoría.
+
+--------------------------------------------------------------------
+6. DOS HALLAZGOS DE LA AUDITORÍA QUE ME RETRACTO
+--------------------------------------------------------------------
+Al ir a corregirlos comprobé que estaban mal contados y no había nada
+que corregir:
+
+  - "14 Console.WriteLine en la API": son CERO en la API. Los 14 están
+    en KonSolutions.Web, no acá.
+  - "2 usos de .Result que bloquean el hilo": son "context.Result" del
+    filtro PermisoAuthorizationFilter, o sea la propiedad del contexto
+    de MVC, no Task.Result. No hay bloqueo.
+
+--------------------------------------------------------------------
+7. NOTA SOBRE LA COMPILACIÓN
+--------------------------------------------------------------------
+Este entorno no tiene el SDK de .NET, así que no pude compilar. Verifiqué
+a mano: los 11 atributos quedaron a nivel de clase (justo debajo de
+[Authorize], nunca sobre un método), los 11 tienen el using, y los textos
+largos van como concatenación de literales con +, que en C# es una
+expresión constante y por lo tanto es válida como argumento de atributo.
+Aun así, compílalo antes de subirlo.
+
+El zip NO incluye .vs, bin ni obj.

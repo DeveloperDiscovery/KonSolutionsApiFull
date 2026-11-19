@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<!-- los instaladores son otros proyectos (subcarpetas KonSolutionsInstalador / Instalador, incluida una vieja que haya quedado): la API no debe compilar nada de ellas, ni sus obj\bin -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);KonSolutionsInstalador\**;Instalador\**</DefaultItemExcludes>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>KonSolutionsApi</RootNamespace>
+		<AssemblyName>KonSolutionsApi</AssemblyName>
+		<!-- Habilita "dotnet user-secrets" para desarrollo local desde el IDE: los secretos
+		     reales (ConnectionStrings:DefaultConnection, JwtSettings:SecretKey) se guardan
+		     fuera del repo (%APPDATA%\Microsoft\UserSecrets\<este guid>\secrets.json en
+		     Windows), no en appsettings.json ni en launchSettings.json (que sí van a git). -->
+		<UserSecretsId>df2397ac-f106-486f-9055-46bc13be8b36</UserSecretsId>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<!-- Suprimir VSD0025: las propiedades usan nombres SQL (SNAKE_UPPER_CASE) intencionalmente para el mapeo Dapper -->
+		<NoWarn>$(NoWarn);VSD0025;VSD0034;VSD0001;VSD0023;VSD0047;VSD0010;AD0001</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<!-- Reporteador: PDF (MigraDoc), Excel (ClosedXML), Word (DocumentFormat.OpenXml, viene con ClosedXML) y QR (QRCoder). Las cuatro con licencia MIT. -->
+		<PackageReference Include="ClosedXML" Version="0.105.1" />
+		<PackageReference Include="PDFsharp-MigraDoc" Version="6.2.4" />
+		<PackageReference Include="QRCoder" Version="1.6.0" />
+		<PackageReference Include="Dapper" Version="2.1.35" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
+		<PackageReference Include="System.DirectoryServices.Protocols" Version="9.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.8.1" />
+	</ItemGroup>
+	<!-- Excluir BenchmarkSuite del glob de compilación del API principal -->
+	<ItemGroup>
+		<Compile Remove="BenchmarkSuite/**" />
+	</ItemGroup>
+</Project>

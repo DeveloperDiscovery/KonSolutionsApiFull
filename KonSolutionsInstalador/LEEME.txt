@@ -1,0 +1,49 @@
+INSTALADOR DE LA API (servicio de Windows KonSolutionsApi)
+(proyecto KonSolutionsInstalador, dentro de la carpeta KonSolutionsApiFull)
+===========================================================
+
+QUE ES
+  Un Instalador.exe (consola, pide permisos de administrador) que deja la API corriendo como servicio de Windows SIN IIS: copia los archivos, pide la configuracion, COMPRUEBA que todo sirve, crea el servicio,
+  abre el puerto en el firewall, lo inicia y verifica que /health responde y que la API acepta a tu web (CORS). Tambien actualiza, desinstala, reinicia y detiene.
+
+QUE CAMBIO EN LA API (3 lineas en Program.cs + 1 paquete; viene en este zip)
+  - builder.Host.UseWindowsService(): la API puede correr como servicio (en consola o Visual Studio sigue igual). Paquete Microsoft.Extensions.Hosting.WindowsServices.
+  - CORS de produccion por configuracion: las direcciones de la web ya no estan fijas en el codigo. Se leen de Cors:Origenes (appsettings.Production.json) o de la variable KonSolutions_CORS_ORIGINS (separadas por coma).
+  - Seguridad:RedirigirAHttps (por omision true = igual que antes): en false la API no redirige a HTTPS (si la instalas solo con HTTP).
+
+COMO GENERARLO (una vez, en una maquina con el SDK de .NET 9)
+  PowerShell:   cd KonSolutionsApiFull\KonSolutionsInstalador ; .\publicar.ps1 -Salida C:\temp\KonSolutionsApiInstalacion
+  Sale una carpeta con  Instalador.exe  y la subcarpeta  Api\  (la API ya publicada). No hace falta .NET en el servidor. Copia la carpeta COMPLETA al servidor.
+
+COMO USARLO (en el servidor)
+  1) Clic derecho en Instalador.exe > Ejecutar como administrador.
+  2) Elige 1) Instalar o actualizar y contesta (Enter acepta lo que sale entre corchetes):
+       - Carpeta de instalacion              C:\KonSolutions\Api
+       - HTTPS                               si (recomendado). Elige un certificado de la maquina (se listan los vigentes con clave privada) o un archivo .pfx. Sin certificado: instala con HTTP.
+       - Puerto                              5001 (HTTPS) / 5000 (HTTP)
+       - Cadena de conexion a SQL Server     no se muestra; queda en la variable de MAQUINA KonSolutions_DB_CONNECTION
+       - Direcciones de la web               las que los usuarios escriben en el navegador, por ejemplo https://sistema.empresa.com (varias separadas por coma). Sin esto el navegador bloquea las llamadas (CORS).
+       - Cuenta del servicio                 vacio = LocalSystem. Si la API lee carpetas de red (rutas de archivos), pon una cuenta DOMINIO\usuario con acceso: LocalSystem no entra a carpetas de red.
+       - Firewall                            abre el puerto (regla "KonSolutions API")
+  3) Comprueba antes de instalar: conecta a SQL y es la base del sistema; el certificado existe; el puerto esta libre.
+  4) Instala: copia la API (NO pisa appsettings.Production.json si ya existe), escribe appsettings.Production.json (puerto, certificado, CORS, carpeta de logs, AllowedHosts "*"), guarda las variables de maquina:
+       KonSolutions_DB_CONNECTION   la cadena que escribiste (si la dejas vacia al actualizar, queda la que ya estaba)
+       KonSolutions_JWT_SECRET      se GENERA solo si no existe (secreto que firma las sesiones). No lo cambies despues: cerraria todas las sesiones.
+       KonSolutions_EMISION_CLAVE   se GENERA solo si no existe (cifra las credenciales de emision electronica de guias). RESPALDALA: si se pierde, esas credenciales hay que volver a escribirlas.
+     crea el servicio (inicio automatico retrasado, reinicio ante fallas) y lo inicia.
+  5) Verifica: espera hasta 60 s a que responda  https://localhost:PUERTO/health  y prueba que la API acepta a cada direccion de la web (CORS).
+  Los logs quedan en la carpeta logs\ de la instalacion.
+
+  ACTUALIZAR: vuelve a correr el instalador con la version nueva. Detiene el servicio, copia los archivos y conserva tu appsettings.Production.json y las variables de maquina.
+  DESINSTALAR: opcion 2 (puede borrar tambien la carpeta). Las variables de maquina no se tocan (la del JWT y la de emision no deben perderse).
+
+INSTALACION DESATENDIDA (scripts, sin preguntas)
+  Instalador.exe --instalar --destino C:\KonSolutions\Api --puerto 5001 --certificado "sistema.empresa.com" --conexion "Server=...;Database=...;User Id=...;Password=...;TrustServerCertificate=True" --origenes https://sistema.empresa.com
+  (o --pfx C:\cert.pfx --clave-pfx ...  |  --http para HTTP; opcional --cuenta DOM\usu --clave-cuenta ... --sin-firewall --sin-iniciar)
+  Instalador.exe --desinstalar [--borrar-archivos --destino C:\KonSolutions\Api]      Instalador.exe --estado
+
+QUE SE PROBO Y QUE NO
+  Probado (en Linux, con la API real compilada y SQL Server): la API arranca en modo Produccion con el appsettings.Production.json que escribe el instalador, /health responde, CORS acepta solo las direcciones configuradas
+  (con y sin barra final, varias, y rechaza a una que no esta), AllowedHosts "*" deja entrar por el nombre del servidor, y la escritura de la configuracion de Kestrel (HTTP, HTTPS con certificado del almacen y con .pfx).
+  NO probado (aqui no hay Windows): crear/iniciar/eliminar el servicio con sc.exe, las variables de maquina, la regla de firewall con netsh, listar los certificados del almacen de Windows, HTTPS real con certificado
+  y el .exe publicado. Si algo falla en tu servidor, copiame el mensaje en rojo.
