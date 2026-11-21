@@ -19,13 +19,15 @@ public class OperacionesTiemposRepository : IOperacionesTiemposRepository
 
     // ===== O1: catalogos =====
     private sealed record Cat(string Sch, string Tab, string Cod, string Des, string? Detalle, string? Orden, string? Flg1, string? Flg2, string? Regla);
-    public static readonly string[] Catalogos = { "categorias", "maquinas", "metodos", "distribuciones" };
+    public static readonly string[] Catalogos = { "categorias", "maquinas", "metodos", "distribuciones", "materiales" };
     private static readonly Dictionary<string, Cat> Cats = new()
     {
         ["categorias"] = new("INGENIERIA", "CATEGORIAS_OCUPACIONALES", "COD_CATEGORIA_OCUPACIONAL", "DES_CATEGORIA_OCUPACIONAL", "DES_CRITERIO", "NUM_ORDEN", null, null, null),
         ["maquinas"] = new("INGENIERIA", "TIPOS_MAQUINA", "COD_TIPO_MAQUINA", "DES_TIPO_MAQUINA", null, null, "FLG_REQUIERE_MAQUINA", null, null),
         ["metodos"] = new("INGENIERIA", "METODOS_TIEMPO", "COD_METODO_TIEMPO", "DES_METODO_TIEMPO", null, null, null, null, null),
         ["distribuciones"] = new("PRODUCCION", "TIPOS_DISTRIBUCION_LINEA", "COD_TIPO_DISTRIBUCION", "DES_TIPO_DISTRIBUCION", null, null, "FLG_FLUJO_UNITARIO", "FLG_REQUIERE_PRECEDENCIA", "COD_REGLA_CICLO"),
+        // tipos de material de la estructura (script 154/155): ejemplos = detalle, FLG_HABILITADO = FLG_1, la abreviatura viaja en COD_REGLA
+        ["materiales"] = new("INGENIERIA", "TIPOS_MATERIAL_ESTRUCTURA", "COD_TIPO_MATERIAL", "DES_TIPO_MATERIAL", "DES_EJEMPLOS", "NUM_ORDEN", "FLG_HABILITADO", null, "DES_ABREVIATURA"),
     };
     private static Cat De(string catalogo) => Cats.TryGetValue(catalogo, out var c) ? c : throw new ArgumentException("Catalogo desconocido: " + catalogo);
     private static string Sp(Cat c, string accion) => $"PROC_{c.Sch}_{c.Tab}_{accion}";

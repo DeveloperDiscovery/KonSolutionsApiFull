@@ -42,6 +42,7 @@ public class OperacionesTiemposService : IOperacionesTiemposService
         {
             Req(item.COD, "El codigo"); Req(item.DES, "La descripcion");
             item.COD = item.COD.Trim().ToUpperInvariant(); item.DES = item.DES.Trim().ToUpperInvariant();
+            if (catalogo == "materiales" && string.IsNullOrWhiteSpace(item.COD_REGLA)) throw new ValidacionException("La abreviatura es obligatoria.");
             if (catalogo == "distribuciones" && item.COD_REGLA is not ("MAX_PUESTO" or "SUMA_OPERARIOS")) throw new ValidacionException("La regla de ciclo debe ser MAX_PUESTO o SUMA_OPERARIOS.");
             await _repo.CatalogoGuardarAsync(catalogo, item, nuevo, codUsuario, codEstacion);
         }, nameof(CatalogoGuardarAsync));

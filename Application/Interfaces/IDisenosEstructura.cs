@@ -21,6 +21,17 @@ public interface IDisenosEstructuraRepository
     Task<string> RutaCrearAsync(DisenosRutaCrearDto dto, string codUsuario, string codEstacion);
     Task RutaAsignarAsync(DisenosRutaAsignarDto dto, string codUsuario, string codEstacion);
     Task<DisenosRutaResultado> RutaCopiarAsync(DisenosRutaCopiarDto dto, string codUsuario, string codEstacion);
+    // formulas de consumo en las lineas (script 147)
+    Task<IEnumerable<DisenosEstructuraFormulaDisponible>> FormulaDisponiblesAsync(DisenosEstructuraLineaClaveDto linea);
+    Task<DisenosEstructuraFormulaLinea> FormulaLineaAsync(DisenosEstructuraLineaClaveDto linea);
+    Task<DisenosEstructuraFormulaResultado> FormulaAsignarAsync(DisenosEstructuraFormulaAsignarDto dto, string codUsuario, string codEstacion);
+    Task FormulaQuitarAsync(DisenosEstructuraLineaClaveDto linea, string codUsuario, string codEstacion);
+    Task<DisenosEstructuraFormulaResultado> FormulaCalcularAsync(DisenosEstructuraFormulaCalcularDto dto, string codUsuario, string codEstacion);
+    Task<IEnumerable<DisenosEstructuraFormulaVersionFila>> FormulaCalcularVersionAsync(string codDiseno, int numVersion, bool guardar, string codUsuario, string codEstacion);
+    Task<IEnumerable<DisenosEstructuraFormulaDiagrama>> FormulaDiagramaAsync(string codDiseno, int numVersion);
+    Task<IEnumerable<DisenosEstructuraIndicador>> IndicadoresAsync(string codDiseno, int numVersion);
+    Task<IEnumerable<DisenosEstructuraTipoMaterial>> TiposMaterialAsync();
+    Task<DisenosEstructuraFormulaResultado> FormulaGuardarAsync(DisenosEstructuraLineaClaveDto linea, string fichasJson, string codUsuario, string codEstacion);
 }
 
 public interface IDisenosEstructuraService
@@ -41,4 +52,14 @@ public interface IDisenosEstructuraService
     Task<ApiResponse<DisenosRutaResultado>> RutaCrearAsync(DisenosRutaCrearDto dto, string codUsuario, string codEstacion);
     Task<ApiResponse<bool>> RutaAsignarAsync(DisenosRutaAsignarDto dto, string codUsuario, string codEstacion);
     Task<ApiResponse<DisenosRutaResultado>> RutaCopiarAsync(DisenosRutaCopiarDto dto, string codUsuario, string codEstacion);
+    Task<ApiResponse<IEnumerable<DisenosEstructuraFormulaDisponible>>> FormulaDisponiblesAsync(DisenosEstructuraLineaClaveDto linea);
+    Task<ApiResponse<DisenosEstructuraFormulaLinea>> FormulaLineaAsync(DisenosEstructuraLineaClaveDto linea);
+    Task<ApiResponse<DisenosEstructuraFormulaResultado>> FormulaAsignarAsync(DisenosEstructuraFormulaAsignarDto dto, string codUsuario, string codEstacion);
+    Task<ApiResponse<bool>> FormulaQuitarAsync(DisenosEstructuraLineaClaveDto linea, string codUsuario, string codEstacion);
+    Task<ApiResponse<DisenosEstructuraFormulaResultado>> FormulaCalcularAsync(DisenosEstructuraFormulaCalcularDto dto, string codUsuario, string codEstacion);
+    Task<ApiResponse<IEnumerable<DisenosEstructuraFormulaVersionFila>>> FormulaCalcularVersionAsync(string codDiseno, int numVersion, bool guardar, string codUsuario, string codEstacion);
+    Task<ApiResponse<IEnumerable<DisenosEstructuraFormulaDiagrama>>> FormulaDiagramaAsync(string codDiseno, int numVersion);
+    Task<ApiResponse<IEnumerable<DisenosEstructuraIndicador>>> IndicadoresAsync(string codDiseno, int numVersion);
+    Task<ApiResponse<IEnumerable<DisenosEstructuraTipoMaterial>>> TiposMaterialAsync();
+    Task<ApiResponse<DisenosEstructuraFormulaResultado>> FormulaGuardarAsync(DisenosEstructuraFormulaGuardarDto dto, string codUsuario, string codEstacion);
 }

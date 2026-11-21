@@ -55,7 +55,9 @@ builder.Services.AddControllers(opciones =>
     // COD_TIPO_ESTADO+COD_ESTADO. Se declara adonde se sabe que hace falta y se extiende
     // deliberadamente. Arranca en "Flujos:Modo" = Auditoria (appsettings), igual que Permisos.
     opciones.Filters.Add<KonSolutionsApi.API.Filters.FlujoAuthorizationFilter>();
-});
+})
+// Regla: los FLG_ sin marcar se guardan como false, nunca NULL (ver Common/FlgFalseJson.cs).
+.AddJsonOptions(o => o.JsonSerializerOptions.TypeInfoResolver = new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver { Modifiers = { FlgFalseJson.Modificador } });
 builder.Services.AddHttpClient();
 
 builder.Services.AddResponseCaching();
@@ -490,6 +492,8 @@ builder.Services.AddScoped<IOperacionesTiemposRepository, OperacionesTiemposRepo
 builder.Services.AddScoped<IOperacionesTiemposService, OperacionesTiemposService>();
 builder.Services.AddScoped<IMatricesOperacionesRepository, MatricesOperacionesRepository>();
 builder.Services.AddScoped<IMatricesOperacionesService, MatricesOperacionesService>();
+builder.Services.AddScoped<IFormulacionRepository, FormulacionRepository>();
+builder.Services.AddScoped<IFormulacionService, FormulacionService>();
 builder.Services.AddScoped<IPersonalLineasRepository, PersonalLineasRepository>();
 builder.Services.AddScoped<IPersonalLineasService, PersonalLineasService>();
 builder.Services.AddScoped<IOperacionesMigracionRepository, OperacionesMigracionRepository>();

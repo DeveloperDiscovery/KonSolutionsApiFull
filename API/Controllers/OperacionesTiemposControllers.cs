@@ -66,6 +66,16 @@ public class TiposDistribucionLineaController : CatalogoOperacionControllerBase
     protected override string Catalogo => "distribuciones";
 }
 
+/// <summary>Tipos de material de la estructura (01 Materia prima ... 05 Herramientas y utillaje; scripts SQL 154 y 155). Permisos: INGENIERIA.TIPOS_MATERIAL_ESTRUCTURA.</summary>
+[Authorize]
+[Route("api/v1/ingenieria/tipos-material-estructura")]
+[ExigePermiso("INGENIERIA.TIPOS_MATERIAL_ESTRUCTURA")]
+public class TiposMaterialEstructuraController : CatalogoOperacionControllerBase
+{
+    public TiposMaterialEstructuraController(IOperacionesTiemposService s) : base(s) { }
+    protected override string Catalogo => "materiales";
+}
+
 /// <summary>Catalogo de operaciones, su composicion en arbol y sus tiempos estandar (scripts SQL 120 y 121).
 /// Permisos: los de INGENIERIA.OPERACIONES (ver = GET, crear = POST, modificar = PUT, borrar = DELETE).</summary>
 [Authorize]
