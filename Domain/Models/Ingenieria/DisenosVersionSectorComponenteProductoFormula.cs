@@ -11,8 +11,8 @@ public class DisenosVersionSectorComponenteProductoFormula
     public int? NUM_SECUENCIA { get; set; }
     public string COD_PRODUCTO_COMPONENTE { get; set; } = string.Empty;
     public int? NUM_SECUENCIA_FORMULA { get; set; }
-    public int? COD_CLASE_ELEMENTO_FORMULA { get; set; }
-    public int? COD_TIPO_ELEMENTO_FORMULA { get; set; }
+    public string? COD_COMPONENTE_FORMULACION { get; set; }
+    public string? COD_ELEMENTO_FORMULACION { get; set; }
     public string DES_ELEMENTO_FORMULA { get; set; } = string.Empty;
     public string DES_ELEMENTO_MASCARA_FORMULA { get; set; } = string.Empty;
     public int? NUM_ORDEN_PRESENTACION { get; set; }
@@ -24,8 +24,10 @@ public class DisenosVersionSectorComponenteProductoFormula
     public DateTime? FEC_ACTUALIZACION { get; set; }
     public string DES_FORMULA { get; set; } = string.Empty;
     public string DES_MASCARA_FORMULA { get; set; } = string.Empty;
-    public string DES_TIPO_ELEMENTO_FORMULA { get; set; } = string.Empty;
-    public string DES_TIPO_MASCARA_FORMULA { get; set; } = string.Empty;
+    public string? DES_COMPONENTE_FORMULACION { get; set; }
+    public string? DES_BACKCOLOR { get; set; }
+    public string? DES_FORECOLOR { get; set; }
+    public string? COD_ALIAS_FORMULACION { get; set; }
 }
 
 public class DisenosVersionSectorComponenteProductoFormulaInsertDto
@@ -37,8 +39,8 @@ public class DisenosVersionSectorComponenteProductoFormulaInsertDto
     public int? NUM_SECUENCIA { get; set; }
     [Required] public string COD_PRODUCTO_COMPONENTE { get; set; } = string.Empty;
     public int? NUM_SECUENCIA_FORMULA { get; set; }
-    public int? COD_CLASE_ELEMENTO_FORMULA { get; set; }
-    public int? COD_TIPO_ELEMENTO_FORMULA { get; set; }
+    public string? COD_COMPONENTE_FORMULACION { get; set; }
+    public string? COD_ELEMENTO_FORMULACION { get; set; }
     [Required] public string DES_ELEMENTO_FORMULA { get; set; } = string.Empty;
     [Required] public string DES_ELEMENTO_MASCARA_FORMULA { get; set; } = string.Empty;
     public int? NUM_ORDEN_PRESENTACION { get; set; }
@@ -55,8 +57,8 @@ public class DisenosVersionSectorComponenteProductoFormulaUpdateDto
     public int? NUM_SECUENCIA { get; set; }
     [Required] public string COD_PRODUCTO_COMPONENTE { get; set; } = string.Empty;
     public int? NUM_SECUENCIA_FORMULA { get; set; }
-    public int? COD_CLASE_ELEMENTO_FORMULA { get; set; }
-    public int? COD_TIPO_ELEMENTO_FORMULA { get; set; }
+    public string? COD_COMPONENTE_FORMULACION { get; set; }
+    public string? COD_ELEMENTO_FORMULACION { get; set; }
     [Required] public string DES_ELEMENTO_FORMULA { get; set; } = string.Empty;
     [Required] public string DES_ELEMENTO_MASCARA_FORMULA { get; set; } = string.Empty;
     public int? NUM_ORDEN_PRESENTACION { get; set; }
